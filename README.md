@@ -1,4 +1,4 @@
-FirmaChain Token
+FirmaChain Contract
 ===================
 
-This is FirmaChain token.
+This is contract of FirmaChain.
