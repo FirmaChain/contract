@@ -1,0 +1,8 @@
+build
+bin
+node_modules
+proj.sublime-*
+package-lock.json
+config.json
+truffle.js
+*.swp

@@ -1,0 +1,27 @@
+{
+  "name": "FirmaChain Token",
+  "version": "1.0.0",
+  "description": "This is a FirmaChain Token. MIT License",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test --network ganache",
+    "test:ropsten": "truffle test --network ropsten"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.2",
+    "mocha-logger": "^1.0.5",
+    "zeppelin-solidity": "^1.9.0"
+  },
+  "devDependencies": {
+    "eth-gas-reporter": "^0.1.2",
+    "truffle-hdwallet-provider": "0.0.5",
+    "truffle-ledger-provider": "0.0.1"
+  }
+}
