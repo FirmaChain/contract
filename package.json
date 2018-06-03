@@ -1,5 +1,5 @@
 {
-  "name": "FirmaChain Token",
+  "name": "FirmaChainContract",
   "version": "1.0.0",
   "description": "This is a FirmaChain Token. MIT License",
   "main": "truffle.js",
