@@ -17,10 +17,10 @@
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.2",
     "mocha-logger": "^1.0.5",
-    "zeppelin-solidity": "^1.10.0"
+    "zeppelin-solidity": "^1.9.0"
   },
   "devDependencies": {
-    "eth-gas-reporter": "^0.1.9",
+    "eth-gas-reporter": "^0.1.2",
     "truffle-hdwallet-provider": "0.0.5",
     "truffle-ledger-provider": "0.0.1"
   }
