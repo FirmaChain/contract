@@ -8,15 +8,15 @@ contract FCT is StandardToken, MultiOwnable {
 
     using SafeMath for uint256;
 
-    uint256 public constant TOTAL_CAP = 3000000000;
+    uint256 public constant TOTAL_CAP = 2200000000;
 
-    string public constant name = "Firma Contract Token";
+    string public constant name = "FirmaChain Token";
     string public constant symbol = "FCT";
     uint256 public constant decimals = 18;
 
     bool isTransferable = false;
 
-    function FCT() public {
+    constructor() public {
         totalSupply_ = TOTAL_CAP.mul(10 ** decimals);
         balances[msg.sender] = totalSupply_;
         emit Transfer(address(0), msg.sender, balances[msg.sender]);
@@ -40,31 +40,28 @@ contract FCT is StandardToken, MultiOwnable {
         return super.transfer(_to, _value);
     }
 
+    // NOTE: _amount of 1 FCT is 10 ** decimals
     function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {
         require(_to != address(0));
 
-        uint256 amount = _amount.mul(10 ** decimals);
-        require(amount >= 0);
+        totalSupply_ = totalSupply_.add(_amount);
+        balances[_to] = balances[_to].add(_amount);
 
-        totalSupply_ = totalSupply_.add(amount);
-        balances[_to] = balances[_to].add(amount);
-
-        emit Mint(_to, amount);
-        emit Transfer(address(0), _to, amount);
+        emit Mint(_to, _amount);
+        emit Transfer(address(0), _to, _amount);
 
         return true;
     }
 
+    // NOTE: _amount of 1 FCT is 10 ** decimals
     function burn(uint256 _amount) onlyOwner public {
-        uint256 amount = _amount.mul(10 ** decimals);
-        require(amount >= 0);
-        require(amount <= balances[msg.sender]);
+        require(_amount <= balances[msg.sender]);
 
-        totalSupply_ = totalSupply_.sub(amount);
-        balances[msg.sender] = balances[msg.sender].sub(amount);
+        totalSupply_ = totalSupply_.sub(_amount);
+        balances[msg.sender] = balances[msg.sender].sub(_amount);
 
-        emit Burn(msg.sender, amount);
-        emit Transfer(msg.sender, address(0), amount);
+        emit Burn(msg.sender, _amount);
+        emit Transfer(msg.sender, address(0), _amount);
     }
 
     event Mint(address indexed _to, uint256 _amount);
