@@ -13,7 +13,7 @@ contract MultiOwnable {
         _;
     }
 
-    function MultiOwnable() public {
+    constructor() public {
         owners[msg.sender] = true;
         unremovableOwner = msg.sender;
     }
