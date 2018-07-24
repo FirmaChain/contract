@@ -1,5 +1,5 @@
-var FGT = artifacts.require('./token/FGT.sol');
+var FCT = artifacts.require('./token/FCT.sol');
 
 module.exports = async (deployer, network) => {
-  await deployer.deploy(FGT);
+  await deployer.deploy(FCT);
 };
