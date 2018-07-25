@@ -1,5 +1,11 @@
-var FCT = artifacts.require('./token/FCT.sol');
+var FCT = artifacts.require('FCT');
+var TokenLock = artifacts.require('TokenLock');
+var TokenLockDistribute = artifacts.require('TokenLockDistribute');
 
 module.exports = async (deployer, network) => {
-  await deployer.deploy(FCT);
+	deployer.then( async() => {
+		await deployer.deploy(FCT);
+		await deployer.deploy(TokenLock, FCT.address)
+		await deployer.deploy(TokenLockDistribute, FCT.address, TokenLock.address)
+	})
 };
