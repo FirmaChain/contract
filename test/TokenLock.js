@@ -18,9 +18,9 @@ contract('Token Distribute And Lock', function(accounts) {
 	const user = accounts[1];
 	const user2 = accounts[2];
 	before(async () => {
-		token = await FCT.new({from: owner});
-		lock = await TokenLock.new(token.address, {from: owner});
-		distribute = await TokenLockDistribute.new(token.address, lock.address, {from: owner});
+		token = await FCT.deployed();
+		lock = await TokenLock.deployed();
+		distribute = await TokenLockDistribute.deployed();
 	});
 
 	it('Distribute contract is added as owner in lock contract', async() => {
