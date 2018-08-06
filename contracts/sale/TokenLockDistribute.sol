@@ -13,15 +13,15 @@ contract TokenLockDistribute is Ownable {
         lock = TokenLock(_lock);
     }
 
-    function distribute(address _to, uint256 _unlockedAmount, uint256 _lockedAmount, uint256 _releaseBlockNumber) public onlyOwner {
+    function distribute(address _to, uint256 _unlockedAmount, uint256 _lockedAmount, uint256 _releaseTimestamp) public onlyOwner {
         require(_to != address(0));
         token.transfer(address(lock), _lockedAmount);
-        lock.lock(_to, _lockedAmount, _releaseBlockNumber);
+        lock.lock(_to, _lockedAmount, _releaseTimestamp);
         token.transfer(_to, _unlockedAmount);
 
-        emit Distribute(_to, _unlockedAmount, _lockedAmount, _releaseBlockNumber);
+        emit Distribute(_to, _unlockedAmount, _lockedAmount, _releaseTimestamp);
     }
 
-    event Distribute(address indexed _to, uint256 _unlockedAmount, uint256 _lockedAmount, uint256 _releaseBlockNumber);
+    event Distribute(address indexed _to, uint256 _unlockedAmount, uint256 _lockedAmount, uint256 _releaseTimestamp);
 }
 
