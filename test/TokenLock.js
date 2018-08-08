@@ -35,7 +35,7 @@ contract('Token Distribute And Lock', function(accounts) {
 		await token.addOwner(distribute.address, {from: owner}).should.be.fulfilled;
 	});
 
-	let releaseBlockNumber1;
+	let releaseTimestamp1;
 	let beforeBalance1;
 	const totalAmount = 1000;
 	const lockedAmount = 100;
@@ -44,32 +44,31 @@ contract('Token Distribute And Lock', function(accounts) {
 		beforeBalance1 = await token.balanceOf(user);
 		await token.transfer(distribute.address, totalAmount, {from: owner}).should.be.fulfilled;
 
-		releaseBlockNumber = await util.getBlockNumber() + 10;
-		await distribute.distribute(user, unlockedAmount, lockedAmount, releaseBlockNumber, {from: owner}).should.be.fulfilled;
+		releaseTimestamp1 = Math.floor(Date.now() / 1000) + 180;
+		await distribute.distribute(user, unlockedAmount, lockedAmount, releaseTimestamp1, {from: owner}).should.be.fulfilled;
 		const afterBalance = await token.balanceOf(user);
 		afterBalance.minus(beforeBalance1).should.be.bignumber.equal(unlockedAmount);
 
 		await lock.release(user, {from: owner}).should.be.rejected;
 	});
 
-	let releaseBlockNumber2;
+	let releaseTimestamp2;
 	let beforeBalance2;
 	it('Owner distributes FCT with locked amount to the another user', async() => {
 		beforeBalance2 = await token.balanceOf(user2);
 		await token.transfer(distribute.address, totalAmount, {from: owner}).should.be.fulfilled;
 
-		releaseBlockNumber2 = await util.getBlockNumber();
-		await distribute.distribute(user2, unlockedAmount, lockedAmount, releaseBlockNumber2, {from: owner}).should.be.fulfilled;
+		releaseTimestamp2 = Math.floor(Date.now() / 1000);
+		await distribute.distribute(user2, unlockedAmount, lockedAmount, releaseTimestamp2, {from: owner}).should.be.fulfilled;
 		const afterBalance = await token.balanceOf(user2);
 		afterBalance.minus(beforeBalance2).should.be.bignumber.equal(unlockedAmount);
 	});
 
 	it('Owner waits block to release', async() => {
 		// NOTE: Wait blocks for network
-		let nowBlockNumber = await util.getBlockNumber();
-		while(nowBlockNumber < releaseBlockNumber) {
-			nowBlockNumber = await util.getBlockNumber();
-			//console.log("N:", nowBlockNumber, "R:", releaseBlockNumber);
+		let nowBlock = await util.getBlock("latest");
+		while(nowBlock.timestamp < releaseTimestamp1) {
+			nowBlock = await util.getBlock("latest");
 		}
 		await lock.release(user, {from: owner}).should.be.fulfilled;
 		const finalBalance = await token.balanceOf(user);
