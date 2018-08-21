@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract Poc {
-	using SafeMath for uint256;
+    using SafeMath for uint256;
     mapping (uint256 => address[]) public parties;
     mapping (uint256 => uint256[]) public hashes;
     mapping (uint256 => string[]) public extraData;
@@ -12,7 +12,7 @@ contract Poc {
     mapping (uint256 => bool) public approvals;
 
     constructor() public {
-	}
+    }
 
     function isExpiredContract(uint256 _contractId) public view returns (bool) {
         return block.number > expireBlockNumbers[_contractId];
