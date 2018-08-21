@@ -49,20 +49,25 @@ contract('Poc', function(accounts) {
 	});
 
 	it('Reject duplicated signs', async () => {
-		await poc.signContract(contractId, contractSign, {from: parties[0]}).should.be.fulfilled;
-		await poc.signContract(contractId, contractSign, {from: parties[0]}).should.be.rejected;
+		await poc.signContract(contractId, contractSign, "extraData", {from: parties[0]}).should.be.fulfilled;
+		await poc.signContract(contractId, contractSign, "extraData", {from: parties[0]}).should.be.rejected;
 	});
 
 	it('Reject sign by person not in party', async () => {
-		await poc.signContract(contractId, contractSign, {from: parties3[2]}).should.be.rejected;
+		await poc.signContract(contractId, contractSign, "extraData", {from: parties3[2]}).should.be.rejected;
 	});
 
 	it('Complete contract two sign', async () => {
 		let resultBefore = await poc.getStatus(contractId);
 		resultBefore.should.be.bignumber.equal(0);
-		await poc.signContract(contractId, contractSign, {from: parties[1]}).should.be.fulfilled;
+		await poc.signContract(contractId, contractSign, "extraData", {from: parties[1]}).should.be.fulfilled;
 		let resultAfter = await poc.getStatus(contractId);
 		resultAfter.should.be.bignumber.equal(1);
+	});
+
+	it('Get extra data', async () => {
+		let extraData = await poc.extraData(contractId, 1);
+		extraData.should.equal("extraData");
 	});
 
 	it('Reject contract with duplicated approved contract id', async () => {
@@ -72,9 +77,9 @@ contract('Poc', function(accounts) {
 	it('Fail to accept contract with different sign', async () => {
 		await poc.newContract(contractId3, parties3, 100).should.be.fulfilled;
 		partiesOfContractBefore = await poc.getParties(contractId3);
-		await poc.signContract(contractId3, contractSign, {from: parties3[0]}).should.be.fulfilled;
-		await poc.signContract(contractId3, contractSignWrong, {from: parties3[1]}).should.be.fulfilled;
-		await poc.signContract(contractId3, contractSign, {from: parties3[2]}).should.be.fulfilled;
+		await poc.signContract(contractId3, contractSign, "extraData", {from: parties3[0]}).should.be.fulfilled;
+		await poc.signContract(contractId3, contractSignWrong, "extraData", {from: parties3[1]}).should.be.fulfilled;
+		await poc.signContract(contractId3, contractSign, "extraData", {from: parties3[2]}).should.be.fulfilled;
 		let result = await poc.getStatus(contractId3);
 		result.should.be.bignumber.equal(-1);
 	});

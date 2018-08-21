@@ -6,6 +6,7 @@ contract Poc {
 	using SafeMath for uint256;
     mapping (uint256 => address[]) public parties;
     mapping (uint256 => uint256[]) public hashes;
+    mapping (uint256 => string[]) public extraData;
     mapping (uint256 => uint256) public signProgress;
     mapping (uint256 => uint256) public expireBlockNumbers;
     mapping (uint256 => bool) public approvals;
@@ -46,6 +47,7 @@ contract Poc {
         if (getStatus(_contractId) == -1) {
             parties[_contractId] = _parties;
             hashes[_contractId] = new uint256[](_parties.length);
+            extraData[_contractId] = new string[](_parties.length);
             signProgress[_contractId] = 0;
             expireBlockNumbers[_contractId] = block.number.add(_lifetime);
             // expireBlockNumbers[_contractId] != 0 means overwrited
@@ -56,7 +58,7 @@ contract Poc {
     }
     event NewContract(uint256 indexed _contractId, address indexed _creator, address[] _parties, uint256 _lifetime, bool _overwrite);
 
-    function signContract(uint256 _contractId, uint256 _signedHash) public {
+    function signContract(uint256 _contractId, uint256 _signedHash, string _extraData) public {
         require(getStatus(_contractId) == 0);
         require(signProgress[_contractId] < parties[_contractId].length);
         bool exist;
@@ -65,6 +67,7 @@ contract Poc {
         require(exist);
         require(hashes[_contractId][index] == 0);
         hashes[_contractId][index] = _signedHash;
+        extraData[_contractId][index] = _extraData;
         signProgress[_contractId] = signProgress[_contractId].add(1);
         emit SignContract(_contractId, msg.sender, _signedHash);
         if (signProgress[_contractId] == parties[_contractId].length) {
