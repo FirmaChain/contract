@@ -20,6 +20,8 @@ contract('Poc', function(accounts) {
 	const contractId0 = new web3.BigNumber("0xa7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8ffff");
 	const contractId = new web3.BigNumber("0xa7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a");
 	const contractId3 = new web3.BigNumber("0xa7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f80002");
+	const contractIdRoot = new web3.BigNumber("0xa7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f81100");
+	const contractIdSub = new web3.BigNumber("0xa7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f81101");
 	const contractSign = new web3.BigNumber("0xa7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f80000");
 	const contractSignWrong = new web3.BigNumber("0xa7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f80001");
 
@@ -96,5 +98,22 @@ contract('Poc', function(accounts) {
 		let partiesOfContractAfter = await poc.getParties(contractId3);
 		JSON.stringify(partiesOfContractBefore).should.be.not.equal(JSON.stringify(partiesOfContractAfter));
 	});
+
+	// SubContract Test
+	it('Make new contract', async () => {
+		await poc.newContract(contractIdRoot, parties, 100).should.be.fulfilled;
+		await poc.newSubContract(contractIdSub, contractIdRoot, 100).should.be.fulfilled;
+		let partiesOfContractRoot = await poc.getParties(contractIdRoot);
+		let partiesOfContractSub = await poc.getParties(contractIdSub);
+		JSON.stringify(parties).should.be.equal(JSON.stringify(partiesOfContractRoot));
+		JSON.stringify(partiesOfContractRoot).should.be.equal(JSON.stringify(partiesOfContractSub));
+	});
+
+	it('Check contract tree', async () => {
+		let expectedHistory = [contractIdRoot, contractIdSub];
+		let actualHistory = await poc.getContractHistory(contractIdSub);
+		JSON.stringify(actualHistory).should.be.equal(JSON.stringify(expectedHistory));
+	});
+
 });
 
