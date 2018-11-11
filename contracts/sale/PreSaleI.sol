@@ -6,23 +6,29 @@ import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 contract PreSaleI is Whitelist {
     using SafeMath for uint256;
-    // rate is the amount of token to the ether.
+    // rate is the amount of token to the ether. Bonus rate is included in exchange rate.
     uint256 public exchangeRate;
+    
+    // in ETH(wei), not token
     uint256 public minValue;
     uint256 public maxTotal;
     uint256 public maxPerAddress;
 
-    uint256 public startBlockNumber;
-    uint256 public endBlockNumber;
+    uint256 public startTimestamp;
+    uint256 public endTimestamp;
     bool public enabled;
 
     address public wallet;
     ERC20 public token;
-    uint256	public accumulatedAmount = 0;
+    
+    // in ETH(wei), not token
+    uint256 public accumulatedAmount = 0;
+    uint256 public accumulatedAmountExternal = 0;
     mapping (address => uint256) public buyAmounts;
+
     address[] public addresses;
 
-    constructor(ERC20 _token, address _wallet, uint256 _exchangeRate, uint256 _minValue, uint256 _maxTotal, uint256 _maxPerAddress, uint256 _startBlockNumber, uint256 _endBlockNumber) public {
+    constructor(ERC20 _token, address _wallet, uint256 _exchangeRate, uint256 _minValue, uint256 _maxTotal, uint256 _maxPerAddress, uint256 _startTimestamp, uint256 _endTimestamp) public {
         require(_token != address(0));
         require(_wallet != address(0));
         token = _token;
@@ -31,8 +37,8 @@ contract PreSaleI is Whitelist {
         minValue = _minValue;
         maxTotal = _maxTotal;
         maxPerAddress = _maxPerAddress;
-        startBlockNumber = _startBlockNumber;
-        endBlockNumber = _endBlockNumber;
+        startTimestamp = _startTimestamp;
+        endTimestamp = _endTimestamp;
         enabled = false;
     }
 
@@ -42,17 +48,25 @@ contract PreSaleI is Whitelist {
     }
     event ToggleEnabled(bool _enabled);
 
+    function updateExternalAmount(uint256 _amount) public onlyOwner {
+        accumulatedAmountExternal = _amount;
+        emit UpdateTotalAmount(accumulatedAmount.add(accumulatedAmountExternal));
+    }
+    event UpdateTotalAmount(uint256 _totalAmount);
+
     function () external payable {
-        buyTokens();
+        if (msg.sender != wallet) {
+            buyTokens();
+        }
     }
 
     function buyTokens() public payable onlyWhitelisted {
         //require(msg.sender != address(0));
         require(enabled);
-        require(block.number >= startBlockNumber && block.number <= endBlockNumber);
+        require(block.timestamp >= startTimestamp && block.timestamp <= endTimestamp);
         require(msg.value >= minValue);
         require(buyAmounts[msg.sender] < maxPerAddress);
-        require(accumulatedAmount < maxTotal);
+        require(accumulatedAmount.add(accumulatedAmountExternal) < maxTotal);
 
         uint256 buyAmount;
         uint256 refundAmount;
@@ -91,6 +105,12 @@ contract PreSaleI is Whitelist {
     }
     event Refund(address indexed _addr, uint256 _buyAmount);
 
+    function withdrawEth() public onlyOwner {
+        wallet.transfer(address(this).balance);
+        emit WithdrawEth(wallet, address(this).balance);
+    }
+    event WithdrawEth(address indexed _addr, uint256 _etherAmount);
+
     function terminate() public onlyOwner {
         require(getNotDelivered() == address(0));
         token.transfer(wallet, token.balanceOf(address(this)));
@@ -109,7 +129,7 @@ contract PreSaleI is Whitelist {
     }
 
     function _calculateAmounts(address _buyAddress, uint256 _buyAmount) private view returns (uint256, uint256) {
-        uint256 buyLimit1 = maxTotal.sub(accumulatedAmount);
+        uint256 buyLimit1 = maxTotal.sub(accumulatedAmount.add(accumulatedAmountExternal));
         uint256 buyLimit2 = maxPerAddress.sub(buyAmounts[_buyAddress]);
         uint256 buyLimit = buyLimit1 > buyLimit2 ? buyLimit2 : buyLimit1;
         uint256 buyAmount = _buyAmount > buyLimit ? buyLimit : _buyAmount;
@@ -118,6 +138,6 @@ contract PreSaleI is Whitelist {
     }
 
     function _isEndCollect() private view returns (bool) {
-        return !enabled && block.number > endBlockNumber;
+        return !enabled && block.timestamp> endTimestamp;
     }
 }
