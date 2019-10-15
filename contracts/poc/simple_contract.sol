@@ -8,6 +8,9 @@ contract EContract {
     constructor() public {
     }
 
+    /*
+    ecrecover : check signer
+    */
     function addSign(bytes32 hash, uint8[] vArray, bytes32[] rArray, bytes32[] sArray, address[] addrArray) public {
         require(vMap[hash].length == 0 && rMap[hash].length == 0 && sMap[hash].length == 0);
         require(vArray.length == rArray.length && rArray.length == sArray.length);
