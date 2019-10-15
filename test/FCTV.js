@@ -1,5 +1,5 @@
 const util = require("./test-util")
-const FCT = artifacts.require('FCT');
+const FCTV = artifacts.require('FCTV');
 const BigNumber = web3.BigNumber
 const L = require('mocha-logger')
 
@@ -8,7 +8,7 @@ require('chai')
   .use(require('chai-as-promised'))
   .should();
 
-contract('[deprecated] FirmaChain Token', function(accounts) {
+contract('[FCT] FirmaChain Token', function(accounts) {
 
 	let fcti;
 	const owner = accounts[0]
@@ -17,12 +17,12 @@ contract('[deprecated] FirmaChain Token', function(accounts) {
 
 	const amount = 1;
 
-	const _name = 'FirmaChain Token';
+	const _name = '[FCT] FirmaChain Token';
 	const _symbol = 'FCT';
 	const _decimals = 18;
 
 	before(async () => {
-		fcti = await FCT.deployed();
+		fcti = await FCTV.deployed();
 	})
 
 	it('has a name', async () => {
