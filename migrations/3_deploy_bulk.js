@@ -1,8 +1,9 @@
+var TokenSwap = artifacts.require('TokenSwap');
 var FCTV = artifacts.require('FCTV');
-var FCTVTransferBulk = artifacts.require('FCTVTransferBulk');
 
 module.exports = function(deployer) {
 	deployer.then( async() => {
-		await deployer.deploy(FCTVTransferBulk, FCTV.address);
+		await deployer.deploy(FCTV);
+		await deployer.deploy(TokenSwap, FCTV.address);
 	})
 };
