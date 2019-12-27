@@ -19,6 +19,7 @@ contract TokenSwap is Ownable{
 
     function registerSwap(string _firmaNetAddress, uint256 balance) public payable {
         uint256 my_balance = token.balanceOf(msg.sender);
+        require(balance > 0, "Should be more than 0");
         require(balance <= my_balance, "Should be equal or less than what I have");
         uint256 allowBalance = token.allowance(msg.sender, address(this));
         require(balance <= allowBalance, "Should be equal or less than what I allowed");
